@@ -1,0 +1,7 @@
+Flask
+schematics==3.2.8
+pymongo
+requests
+celery
+redis
+xlsxwriter

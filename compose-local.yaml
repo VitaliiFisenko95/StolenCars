@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  stolen-cars-api:
+    environment:
+      RESP_FORMAT: 'json'
+      BROKER_URL: 'redis://redis'
+      RESULT_BACKEND: 'redis://redis'
+      FILED_DIRECTORY: 'files'
+    volumes:
+      - ./files:/stolen_cars/files
+    ports:
+      - 8080:80
+
+  mongo:
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - 27017:27017
+
+  celery:
+    command: 'celery -A stolen_cars.celery worker -B -E -l DEBUG'
+    environment:
+      RESP_FORMAT: 'json'
+      BROKER_URL: 'redis://redis'
+      RESULT_BACKEND: 'redis://redis'
+      FILED_DIRECTORY: 'files'
+#    volumes:
+#      - ./files:/stolen_cars/files    <- if you need to save on machine files - uncomment volumes
+
+#  beat: Needs for more than one app instance
+#    command: 'celery beat --app=celery -l info'
+#    environment:
+#      BROKER_URL: 'redis://redis'
+#      RESULT_BACKEND: 'redis://redis'
+
+  redis:
+    ports:
+      - 6379:6379
+
+
+volumes:
+  mongo_data:

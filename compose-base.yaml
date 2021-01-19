@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  stolen-cars-api:
+    image: "${IMAGE}"
+    command: python -m stolen_cars.api
+    environment:
+      IS_DEBUG: 1
+      MONGO_URL: 'mongodb://mongo:27017'
+      MONGO_DATABASE: 'stolen_cars'
+      VIN_DECODE_URL: 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin'
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+
+  celery:
+    image: "${IMAGE}"
+    environment:
+      IS_DEBUG: 1
+      MONGO_URL: 'mongodb://mongo:27017'
+      MONGO_DATABASE: 'stolen_cars'
+      VIN_DECODE_URL: 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin'
+    depends_on:
+      - mongo
+      - redis
+
+#  beat: Needs for more than one app instance
+#    image: "${IMAGE}"
+#    environment:
+#      IS_DEBUG: 1
+#      MONGO_URL: 'mongodb://mongo:27017'
+#      MONGO_DATABASE: 'stolen_cars'
+#      VIN_DECODE_URL: 'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin'
+#    depends_on:
+#      - mongo
+#      - redis
+
+  redis:
+    image: redis
+
